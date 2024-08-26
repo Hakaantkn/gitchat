@@ -1,8 +1,37 @@
 "use client"
 import React from 'react'
 import { Button } from '@/components/ui/button'
+import { supabaseBrowser } from '@/lib/supabase/browser'
+import { createClient } from '@supabase/supabase-js'
+import { User } from '@supabase/supabase-js'
+import { useRouter } from 'next/router'
 
-export default function ChatHeader() {
+export default function ChatHeader({ user }) {
+    if(user && typeof user === 'object'){
+        console.log(oldu);
+        
+    } else {
+        console.log('olmadı');
+        
+    }
+    const router = useRouter();
+
+    const handleLoginGithub = () => {
+        const supabase = supabaseBrowser()
+        supabase.auth.signInWithOAuth({
+            provider: 'github',
+            options: {
+                redirectTo:Location.origin + "/auth/callback"
+            }
+        });
+    };
+
+    const handleLogout = async () => {
+        const supabase = supabaseBrowser()
+        await supabase.auth.signOut();
+        router.refresh();
+    }
+
     return (
     <div className="max-w-3xl mx-auto md:py-10 h-screen">
         <div className=" h-full border rounded-md">
@@ -17,7 +46,13 @@ export default function ChatHeader() {
                   </h1>
                 </div>
               </div>
-              <Button>Login</Button>
+                {user ? (
+                    <Button onClick={handleLogout}>Logout</Button>
+
+                ) : (
+                    <Button onClick={handleLoginGithub}>Login</Button>
+                )}
+
             </div>
           </div>
         </div>
